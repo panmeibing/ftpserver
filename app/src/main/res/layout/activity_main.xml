@@ -1,23 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center">
 
     <Button
-        android:id="@+id/btnStart"
+        android:id="@+id/btnSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="开启" />
-
-    <Button
-        android:id="@+id/btnStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="关闭" />
-
-    <Button
-        android:id="@+id/btnSetting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="设置" />
 </LinearLayout>

@@ -18,6 +18,8 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -41,19 +43,16 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private FtpServer ftpServer;
-    private Button btnStart, btnStop, btnSetting;
+    private boolean isStartFtp = false;
+    private Button btnSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnStart = findViewById(R.id.btnStart);
-        btnStop = findViewById(R.id.btnStop);
-        btnSetting = findViewById(R.id.btnSetting);
-        btnStart.setOnClickListener(this);
-        btnStop.setOnClickListener(this);
-        btnSetting.setOnClickListener(this);
+        btnSwitch = findViewById(R.id.btnSwitch);
+        btnSwitch.setOnClickListener(this);
         requestPermissionSingle();
     }
 
@@ -152,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(getApplicationContext(), "开启FTPServer成功", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "start ftp server failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "开启FTPServer失败", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -165,26 +164,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(getApplicationContext(), "已关闭FTP服务", Toast.LENGTH_SHORT).show();
                 Log.d("stopFtpServer", "ftpServer stop successful");
             } else {
-                Log.d("stopFtpServer", "ftpServer already stopped");
+                Log.e("stopFtpServer", "ftpServer already stopped");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("stopFtpServer", "ftpServer stop error");
+            Log.e("stopFtpServer", "ftpServer stop error");
+            Toast.makeText(getApplicationContext(), "关闭FTP服务错误", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // 菜单
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menuSetting) {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.menuAbout) {
+            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (null != ftpServer) {
+            ftpServer.stop();
+            ftpServer = null;
         }
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.btnStart) {
-            Log.d("onClick", "btnStart");
-            startFtpServer();
-        } else if (id == R.id.btnStop) {
-            Log.d("onClick", "btnStop");
-            stopFtpServer();
-        } else if (id == R.id.btnSetting) {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
+        if (id == R.id.btnSwitch) {
+            if (isStartFtp) {
+                stopFtpServer();
+                isStartFtp = false;
+                btnSwitch.setText("开启");
+            } else {
+                startFtpServer();
+                isStartFtp = true;
+                btnSwitch.setText("关闭");
+            }
+
         }
     }
 
@@ -214,16 +247,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return intIP2StringIP(wifiInfo.getIpAddress());
             }
         } else {
-            //当前无网络连接,请在设置中打开网络
-            Log.e("getIPAddress", "当前无网络连接,请在设置中打开网络");
+            Log.e("getIPAddress", "当前网络不可用,请先连接网络");
+            Toast.makeText(context.getApplicationContext(), "当前网络不可用,请先连接网络", Toast.LENGTH_SHORT).show();
         }
         return null;
     }
 
     public static String intIP2StringIP(int ip) {
-        return (ip & 0xFF) + "." +
-                ((ip >> 8) & 0xFF) + "." +
-                ((ip >> 16) & 0xFF) + "." +
-                (ip >> 24 & 0xFF);
+        return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + (ip >> 24 & 0xFF);
     }
 }
