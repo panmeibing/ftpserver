@@ -1,6 +1,7 @@
 package com.example.myftpserver;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.ftpserver.FtpServer;
@@ -47,6 +49,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isStartFtp = false;
     private Button btnSwitch;
     private ImageView imageView;
+    private String defaultPath;
+    private TextView tvTipText;
+    private AlertDialog.Builder builder;
+    private long exitTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +62,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSwitch = findViewById(R.id.btnSwitch);
         btnSwitch.setOnClickListener(this);
         imageView = findViewById(R.id.ivLogo);
+        tvTipText = findViewById(R.id.tvTipText);
         requestPermissionSingle();
+        createDefaultSPValue();
+        initDialog();
+    }
+
+    private void createDefaultSPValue() {
+        defaultPath = Environment.getExternalStorageDirectory().getPath() + "/myFtpFiles";
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("default_path", defaultPath);
+        editor.apply();
     }
 
     private void requestPermissionSingle() {
@@ -84,8 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private boolean mkdir(String path) {
-        String storagePath = Environment.getExternalStorageDirectory().getPath() + "/" + path;
-        File dirFile = new File(storagePath);
+        File dirFile = new File(path);
         Log.d("mkdir", "mkdir path:" + dirFile);
         if (dirFile.exists()) {
             Log.e("mkdir", "文件夹已存在");
@@ -102,52 +118,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private boolean startFtpServer() {
+    private boolean startFtpServer(String ipAddress) {
         Log.d("startFtpServer", "尝试开启ftpServer");
-        String ipAddress = getIPAddress(getApplicationContext());
-        Log.e("startFtpServer", "ipAddress: " + ipAddress);
         String userName = "anonymous";
         String password = "";
-        String path = "/";
         int port = 2221;
 //        SharedPreferences sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean spIsAuth = sharedPreferences.getBoolean("is_auth", false);
         String spUsername = sharedPreferences.getString("username", "");
         String spPassword = sharedPreferences.getString("password", "");
+        String workPath = sharedPreferences.getString("default_path", "");
         Log.e("startFtpServer", "isAuth: " + spIsAuth + ", spUsername:" + spUsername + ", spPassword:" + spPassword);
-        Toast.makeText(getApplicationContext(), "isAuth: " + spIsAuth + ", spUsername:" + spUsername + ", spPassword:" + spPassword, Toast.LENGTH_SHORT).show();
         if (spIsAuth && !spUsername.equals("")) {
             userName = spUsername;
             password = spPassword;
             Log.d("startFtpServer", "使用认证");
         }
-        if (!mkdir("pan")) {
-            Toast.makeText(getApplicationContext(), "创建文件夹失败", Toast.LENGTH_SHORT).show();
+        if (!workPath.equals("")) {
+            if (!mkdir(workPath)) {
+                Toast.makeText(getApplicationContext(), "创建文件夹失败", Toast.LENGTH_SHORT).show();
+                createDefaultSPValue();
+                workPath = defaultPath;
+            }
         }
         FtpServerFactory serverFactory = new FtpServerFactory();
         BaseUser baseUser = new BaseUser();
         baseUser.setName(userName);
         baseUser.setPassword(password);
-        baseUser.setHomeDirectory(path);
+        baseUser.setHomeDirectory(workPath);
+        baseUser.setEnabled(true);
 
-        List<Authority> authorities = new ArrayList<Authority>();
+        List<Authority> authorities = new ArrayList<>();
         authorities.add(new WritePermission());
         baseUser.setAuthorities(authorities);
         try {
             serverFactory.getUserManager().save(baseUser);
         } catch (Exception e) {
             Log.e("startFtpServer", "serverFactory userManager save baseUser error");
+            Toast.makeText(getApplicationContext(), "保存baseUser失败", Toast.LENGTH_SHORT).show();
+            return false;
         }
         ListenerFactory listenerFactory = new ListenerFactory();
-//        listenerFactory.setServerAddress();
+        if (ipAddress != null) {
+            listenerFactory.setServerAddress(ipAddress);
+        }
         listenerFactory.setPort(port);
         Listener listener = listenerFactory.createListener();
-        String address = listener.getServerAddress();
-        Log.d("startFtpServer", "address:" + address + ", port:" + port);
-        Toast.makeText(getApplicationContext(), "address:" + address + ", port:" + port, Toast.LENGTH_SHORT).show();
         serverFactory.addListener("default", listener);
         try {
+            if (ftpServer != null) {
+                ftpServer.stop();
+            }
             ftpServer = serverFactory.createServer();
             ftpServer.start();
             Log.d("startFtpServer", "开启FTPServer成功");
@@ -163,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private boolean stopFtpServer() {
         try {
-            if (!ftpServer.isStopped()) {
+            if (ftpServer != null && !ftpServer.isStopped()) {
                 ftpServer.stop();
                 Toast.makeText(getApplicationContext(), "已关闭FTP服务", Toast.LENGTH_SHORT).show();
                 Log.d("stopFtpServer", "ftpServer stop successful");
@@ -197,8 +219,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(MainActivity.this, AboutActivity.class);
             startActivity(intent);
             return true;
+        } else if (itemId == R.id.menuQuit) {
+            if (isStartFtp) {
+                builder.show();
+            } else {
+                finish();
+                System.exit(0);
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+        } else {
+            if (isStartFtp) {
+                builder.show();
+            } else {
+                finish();
+            }
+        }
     }
 
     @Override
@@ -208,6 +252,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ftpServer.stop();
             ftpServer = null;
         }
+    }
+
+    private void initDialog() {
+        builder = new AlertDialog.Builder(this)
+                .setTitle("提示").setMessage("确定要退出程序吗？检测到Ftp服务还未停止，退出后会断开连接")
+                .setPositiveButton("确定", (dialog, which) -> {
+                    stopFtpServer();
+                    finish();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
     }
 
     @Override
@@ -220,14 +275,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     isStartFtp = false;
                     btnSwitch.setText("开启");
                     imageView.setImageResource(R.drawable.wifi2);
+                    tvTipText.setText("");
                 }
             } else {
-                boolean isStart = startFtpServer();
+                String ipAddress = getIPAddress(getApplicationContext());
+                if (ipAddress == null) {
+                    Toast.makeText(getApplicationContext(), "获取IP地址失败", Toast.LENGTH_SHORT).show();
+                }
+                boolean isStart = startFtpServer(ipAddress);
                 if (isStart) {
                     isStartFtp = true;
                     btnSwitch.setText("关闭");
                     imageView.setImageResource(R.drawable.wifi1);
+                    String tipTxt = "";
+                    if (ipAddress == null) {
+                        tipTxt = "ftp://本设备IP(获取失败请手动查看):2221";
+                    } else {
+                        tipTxt = "ftp://" + ipAddress + ":2221";
+                    }
+                    tvTipText.setText(tipTxt);
                 }
+
             }
         }
     }
@@ -250,8 +318,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 } catch (SocketException e) {
                     e.printStackTrace();
+                    return null;
                 }
-
             } else if (info.getType() == ConnectivityManager.TYPE_WIFI) {//当前使用无线网络
                 WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
@@ -260,6 +328,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             Log.e("getIPAddress", "当前网络不可用,请先连接网络");
             Toast.makeText(context.getApplicationContext(), "当前网络不可用,请先连接网络", Toast.LENGTH_SHORT).show();
+            return null;
         }
         return null;
     }

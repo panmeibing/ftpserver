@@ -11,4 +11,9 @@
         android:orderInCategory="100"
         android:title="关于"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menuQuit"
+        android:orderInCategory="100"
+        android:title="退出"
+        app:showAsAction="never" />
 </menu>

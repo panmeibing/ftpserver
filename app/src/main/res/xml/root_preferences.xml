@@ -20,6 +20,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="路径">
+
+        <EditTextPreference
+            app:key="default_path"
+            app:title="默认路径"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
     <!--    <PreferenceCategory app:title="root_path">-->
 
     <!--        <SwitchPreferenceCompat-->
