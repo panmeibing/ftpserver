@@ -64,16 +64,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageView = findViewById(R.id.ivLogo);
         tvTipText = findViewById(R.id.tvTipText);
         requestPermissionSingle();
-        createDefaultSPValue();
+        createDefaultSPValue(false);
         initDialog();
     }
 
-    private void createDefaultSPValue() {
+    private void createDefaultSPValue(boolean isForce) {
         defaultPath = Environment.getExternalStorageDirectory().getPath() + "/myFtpFiles";
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("default_path", defaultPath);
-        editor.apply();
+        String workPath = sharedPreferences.getString("work_path", "");
+        if (isForce) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("work_path", defaultPath);
+            editor.apply();
+        } else {
+            if (workPath.equals("")) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("work_path", defaultPath);
+                editor.apply();
+            }
+        }
+
+
     }
 
     private void requestPermissionSingle() {
@@ -128,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         boolean spIsAuth = sharedPreferences.getBoolean("is_auth", false);
         String spUsername = sharedPreferences.getString("username", "");
         String spPassword = sharedPreferences.getString("password", "");
-        String workPath = sharedPreferences.getString("default_path", "");
+        String workPath = sharedPreferences.getString("work_path", "");
         Log.e("startFtpServer", "isAuth: " + spIsAuth + ", spUsername:" + spUsername + ", spPassword:" + spPassword);
         if (spIsAuth && !spUsername.equals("")) {
             userName = spUsername;
@@ -138,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!workPath.equals("")) {
             if (!mkdir(workPath)) {
                 Toast.makeText(getApplicationContext(), "创建文件夹失败", Toast.LENGTH_SHORT).show();
-                createDefaultSPValue();
+                createDefaultSPValue(true);
                 workPath = defaultPath;
             }
         }

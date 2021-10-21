@@ -23,7 +23,7 @@
     <PreferenceCategory app:title="路径">
 
         <EditTextPreference
-            app:key="default_path"
+            app:key="work_path"
             app:title="默认路径"
             app:useSimpleSummaryProvider="true" />
 
