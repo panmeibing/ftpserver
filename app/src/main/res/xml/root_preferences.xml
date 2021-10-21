@@ -1,6 +1,6 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="user_auth">
+    <PreferenceCategory app:title="认证">
 
         <SwitchPreferenceCompat
             app:key="is_auth"
@@ -20,19 +20,19 @@
 
     </PreferenceCategory>
 
-<!--    <PreferenceCategory app:title="root_path">-->
+    <!--    <PreferenceCategory app:title="root_path">-->
 
-<!--        <SwitchPreferenceCompat-->
-<!--            app:key="sync"-->
-<!--            app:title="@string/sync_title" />-->
+    <!--        <SwitchPreferenceCompat-->
+    <!--            app:key="sync"-->
+    <!--            app:title="@string/sync_title" />-->
 
-<!--        <SwitchPreferenceCompat-->
-<!--            app:dependency="sync"-->
-<!--            app:key="attachment"-->
-<!--            app:summaryOff="@string/attachment_summary_off"-->
-<!--            app:summaryOn="@string/attachment_summary_on"-->
-<!--            app:title="@string/attachment_title" />-->
+    <!--        <SwitchPreferenceCompat-->
+    <!--            app:dependency="sync"-->
+    <!--            app:key="attachment"-->
+    <!--            app:summaryOff="@string/attachment_summary_off"-->
+    <!--            app:summaryOn="@string/attachment_summary_on"-->
+    <!--            app:title="@string/attachment_title" />-->
 
-<!--    </PreferenceCategory>-->
+    <!--    </PreferenceCategory>-->
 
 </PreferenceScreen>

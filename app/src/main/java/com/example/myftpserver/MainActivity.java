@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.apache.ftpserver.FtpServer;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FtpServer ftpServer;
     private boolean isStartFtp = false;
     private Button btnSwitch;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnSwitch = findViewById(R.id.btnSwitch);
         btnSwitch.setOnClickListener(this);
+        imageView = findViewById(R.id.ivLogo);
         requestPermissionSingle();
     }
 
@@ -99,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void startFtpServer() {
+    private boolean startFtpServer() {
         Log.d("startFtpServer", "尝试开启ftpServer");
         String ipAddress = getIPAddress(getApplicationContext());
         Log.e("startFtpServer", "ipAddress: " + ipAddress);
@@ -152,12 +155,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "开启FTPServer失败", Toast.LENGTH_SHORT).show();
+            return false;
         }
-
+        return true;
     }
 
 
-    private void stopFtpServer() {
+    private boolean stopFtpServer() {
         try {
             if (!ftpServer.isStopped()) {
                 ftpServer.stop();
@@ -170,7 +174,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
             Log.e("stopFtpServer", "ftpServer stop error");
             Toast.makeText(getApplicationContext(), "关闭FTP服务错误", Toast.LENGTH_SHORT).show();
+            return false;
         }
+        return true;
     }
 
     // 菜单
@@ -209,15 +215,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int id = v.getId();
         if (id == R.id.btnSwitch) {
             if (isStartFtp) {
-                stopFtpServer();
-                isStartFtp = false;
-                btnSwitch.setText("开启");
+                boolean isStop = stopFtpServer();
+                if (isStop) {
+                    isStartFtp = false;
+                    btnSwitch.setText("开启");
+                    imageView.setImageResource(R.drawable.wifi2);
+                }
             } else {
-                startFtpServer();
-                isStartFtp = true;
-                btnSwitch.setText("关闭");
+                boolean isStart = startFtpServer();
+                if (isStart) {
+                    isStartFtp = true;
+                    btnSwitch.setText("关闭");
+                    imageView.setImageResource(R.drawable.wifi1);
+                }
             }
-
         }
     }
 

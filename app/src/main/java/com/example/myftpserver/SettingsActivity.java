@@ -2,7 +2,6 @@ package com.example.myftpserver;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -28,6 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
+            actionBar.setTitle("设置");
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
