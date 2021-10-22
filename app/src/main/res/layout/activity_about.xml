@@ -1,9 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ice.icyftpserver.AboutActivity">
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20sp"
+        android:paddingTop="20sp"
+        android:text="使用说明"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="5dp"
+        android:paddingTop="10dp"
+        android:paddingStart="20dp"
+        android:textIsSelectable="true"
+        android:text="1.确保访问设备和被访问设备处于同一个网段，即在同一个局域网，例如连接的是同一个路由器\n
+2.在主页面开启Ftp服务，会提示设备的IP端口，形式为“ftp://IP:端口”\n
+3.在（Windows系统）打开文件资源管理器输入该地址即可访问，或者使用第三方Ftp客户端进行连接\n
+4.默认不开启认证，即不需要输入账号密码，虽方便但并不安全，所以有需要的话可以打开设置界面进行设置认证\n
+5.设置页面可以修改访问路径，但要确认APP有访问权限"
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20sp"
+        android:paddingTop="20sp"
+        android:text="关于APP"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="5dp"
+        android:paddingTop="10dp"
+        android:paddingStart="20dp"
+        android:textIsSelectable="true"
+        android:text="每次传文件都需要打开QQ、微信、快传等APP，感觉不是很方便，当然市场上也有很多优秀的FTP软件，包括很多系统自带的文件管理器都带有FTP功能，但是这些APP我感觉有两个缺点，1是不能支持自定义访问路径，2是APP太臃肿不够整洁，而且界面风格不是我喜欢的，所以我还是自己花时间写这个APP，反正我自己用着舒服"
+        android:textSize="15sp"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20sp"
+        android:paddingTop="20sp"
+        android:text="作者"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="5dp"
+        android:paddingTop="10dp"
+        android:paddingStart="20dp"
+        android:textIsSelectable="true"
+        android:text="冰冷的希望，比较喜欢计算机、设计、编程、分享，我平时分享的软件都可以在我的个人公众号“冰冷的希望”，有需要的话可以自取"
+        android:textSize="15sp"
+        tools:ignore="RtlSymmetry" />
+
+</LinearLayout>
