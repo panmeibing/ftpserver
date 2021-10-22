@@ -1,4 +1,4 @@
-package com.example.myftpserver;
+package com.ice.icyftpserver;
 
 import org.junit.Test;
 

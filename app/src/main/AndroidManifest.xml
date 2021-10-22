@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.myftpserver">
+    package="com.ice.icyftpserver">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -19,14 +19,14 @@
         android:theme="@style/Theme.MyFTPServer"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".AboutActivity"
+            android:name="com.ice.icyftpserver.AboutActivity"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.ice.icyftpserver.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.ice.icyftpserver.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

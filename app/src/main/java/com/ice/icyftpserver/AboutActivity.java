@@ -1,4 +1,4 @@
-package com.example.myftpserver;
+package com.ice.icyftpserver;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;

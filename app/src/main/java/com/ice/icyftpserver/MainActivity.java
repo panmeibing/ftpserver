@@ -1,4 +1,4 @@
-package com.example.myftpserver;
+package com.ice.icyftpserver;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void createDefaultSPValue(boolean isForce) {
-        defaultPath = Environment.getExternalStorageDirectory().getPath() + "/myFtpFiles";
+        defaultPath = Environment.getExternalStorageDirectory().getPath() + "/icyFtpFiles";
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String workPath = sharedPreferences.getString("work_path", "");
         if (isForce) {

@@ -1,4 +1,4 @@
-package com.example.myftpserver;
+package com.ice.icyftpserver;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,7 +13,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

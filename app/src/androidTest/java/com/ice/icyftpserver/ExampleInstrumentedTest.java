@@ -1,4 +1,4 @@
-package com.example.myftpserver;
+package com.ice.icyftpserver;
 
 import android.content.Context;
 
