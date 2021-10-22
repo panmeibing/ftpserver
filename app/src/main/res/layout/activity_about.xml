@@ -57,7 +57,7 @@
                 android:paddingStart="20dp"
                 android:paddingTop="10dp"
                 android:paddingEnd="20dp"
-                android:text="每次传文件都需要打开QQ、微信、快传等APP，感觉不是很方便，当然市场上也有很多优秀的FTP软件，包括很多系统自带的文件管理器都带有FTP功能，但是这些APP我感觉有两个缺点，1是不能支持自定义访问路径，2是APP太臃肿不够整洁，而且界面风格不是我喜欢的，所以我还是自己花时间写这个APP，反正我自己用着舒服"
+                android:text="每次传文件都需要打开QQ、微信、快传等APP，感觉不是很方便，当然市场上也有很多优秀的FTP软件，包括很多系统自带的文件管理器都带有FTP功能，但是这些APP我感觉有些不足，1是不能支持自定义访问路径，2是APP太臃肿不够整洁，3是界面风格不是我喜欢的，所以我还是自己花时间写了这个APP，反正我自己用着舒服"
                 android:textIsSelectable="true"
                 android:textSize="15sp"
                 tools:ignore="RtlSymmetry" />
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="20sp"
                 android:paddingTop="20sp"
-                android:text="作者"
+                android:text="关于作者"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 tools:ignore="RtlSymmetry" />
@@ -79,7 +79,7 @@
                 android:paddingStart="20dp"
                 android:paddingTop="10dp"
                 android:paddingEnd="20dp"
-                android:text="冰冷的希望，比较喜欢计算机、设计、编程、分享，我平时分享的软件都可以在我的个人公众号“冰冷的希望”，有需要的话可以自取"
+                android:text="我是冰冷的希望，比较喜欢计算机、设计、编程、分享，我平时分享的软件都可以在我的个人微信公众号“冰冷的希望”找到，有需要的话可以自取\n\n博客：https://blog.csdn.net/qq_39147299\n网站：https://binglengdexiwang.top\nB站：https://space.bilibili.com/276278522\n"
                 android:textIsSelectable="true"
                 android:textSize="15sp"
                 tools:ignore="RtlSymmetry" />
