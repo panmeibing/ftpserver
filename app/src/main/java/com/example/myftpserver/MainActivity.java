@@ -280,6 +280,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.btnSwitch) {
+            if (!isMountSdCard()) {
+                Toast.makeText(getApplicationContext(), "未挂载SD卡，无法开启Ftp服务", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (isStartFtp) {
                 boolean isStop = stopFtpServer();
                 if (isStop) {
@@ -313,38 +317,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public static String getIPAddress(Context context) {
-        NetworkInfo info = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-        if (info != null && info.isConnected()) {
-            if (info.getType() == ConnectivityManager.TYPE_MOBILE) {//当前使用2G/3G/4G网络
-                try {
-                    //Enumeration<NetworkInterface> en=NetworkInterface.getNetworkInterfaces();
-                    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                        NetworkInterface intf = en.nextElement();
-                        for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                            InetAddress inetAddress = enumIpAddr.nextElement();
-                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                                return inetAddress.getHostAddress();
+        try {
+            NetworkInfo info = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+            if (info != null && info.isConnected()) {
+                if (info.getType() == ConnectivityManager.TYPE_MOBILE) {//当前使用2G/3G/4G网络
+                    try {
+                        //Enumeration<NetworkInterface> en=NetworkInterface.getNetworkInterfaces();
+                        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                            NetworkInterface intf = en.nextElement();
+                            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                                InetAddress inetAddress = enumIpAddr.nextElement();
+                                if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                                    return inetAddress.getHostAddress();
+                                }
                             }
                         }
+                    } catch (SocketException e) {
+                        e.printStackTrace();
+                        return null;
                     }
-                } catch (SocketException e) {
-                    e.printStackTrace();
-                    return null;
+                } else if (info.getType() == ConnectivityManager.TYPE_WIFI) {//当前使用无线网络
+                    WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                    return intIP2StringIP(wifiInfo.getIpAddress());
                 }
-            } else if (info.getType() == ConnectivityManager.TYPE_WIFI) {//当前使用无线网络
-                WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                return intIP2StringIP(wifiInfo.getIpAddress());
+            } else {
+                Log.e("getIPAddress", "当前网络不可用,请先连接网络");
+                Toast.makeText(context.getApplicationContext(), "当前网络不可用,请先连接网络", Toast.LENGTH_SHORT).show();
+                return null;
             }
-        } else {
-            Log.e("getIPAddress", "当前网络不可用,请先连接网络");
-            Toast.makeText(context.getApplicationContext(), "当前网络不可用,请先连接网络", Toast.LENGTH_SHORT).show();
-            return null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("getIPAddress", "获取IP地址失败");
         }
         return null;
     }
 
     public static String intIP2StringIP(int ip) {
         return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + (ip >> 24 & 0xFF);
+    }
+
+    public boolean isMountSdCard() {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            Log.e("isMountSdCard", "已挂载SD卡");
+        }
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 }

@@ -1,7 +1,9 @@
 package com.example.myftpserver;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -9,7 +11,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +51,7 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
+            Preference sPWitchIsAuth = findPreference("is_auth");
             Preference sPEditUsername = findPreference("username");
             Preference sPEditPassword = findPreference("password");
             if (sPEditUsername != null) {
@@ -55,7 +60,24 @@ public class SettingsActivity extends AppCompatActivity {
             if (sPEditPassword != null) {
                 sPEditPassword.setOnPreferenceChangeListener(this);
             }
-
+            if (sPWitchIsAuth != null) {
+                sPWitchIsAuth.setOnPreferenceChangeListener((preference, newValue) -> {
+                    Log.d("sPWitchIsAuth", " sPWitchIsAuth onPreferenceChange: " + newValue.toString());
+                    if (newValue.toString().equals("true")) {
+                        Log.e("onPreferenceChange", "is_auth == true");
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireActivity().getApplicationContext());
+                        String spUsername = sharedPreferences.getString("username", "");
+                        if (spUsername.equals("")) {
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("username", "admin");
+                            editor.putString("password", "12345");
+                            editor.apply();
+                        }
+                    }
+                    Toast.makeText(getContext(), "修改成功，请重启Ftp服务", Toast.LENGTH_SHORT).show();
+                    return true;
+                });
+            }
         }
 
         @Override

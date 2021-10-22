@@ -7,12 +7,14 @@
             app:title="是否需要认证" />
 
         <EditTextPreference
+            app:defaultValue="admin"
             app:dependency="is_auth"
             app:key="username"
             app:title="用户名"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
+            app:defaultValue="12345"
             app:dependency="is_auth"
             app:key="password"
             app:title="密码"
